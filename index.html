@@ -1,0 +1,124 @@
+<html>
+  <head>
+    <title>EtherPot</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/flatui/css/flat-ui.css">
+    <style>
+    	body{padding-top: 60px}
+    	[ng-cloak]{display: none}
+      	[ng-click]{cursor: pointer;}
+    	#hero{text-align: center;margin-bottom: 20px}
+    	#pot{font-size: 48px;}
+      	#tabs{margin-bottom: 20px}
+      	a{text-decoration: none !important;}
+      	input[type="number"]{
+      		height: 34px;
+		    padding: 6px 12px;
+		}
+		.btn-sm{
+			padding: 6px 10px !important;
+    		font-size: 12px !important;
+		}
+    </style>
+  </head>
+  <body ng-app="app">
+  	<nav class="navbar navbar-inverse navbar-top navbar-fixed-top">
+			  <div class="container">
+			    <div class="navbar-header">
+            <a class="navbar-brand">EtherPot</a>
+          </div>
+          <div class="navbar-form navbar-right">
+          	<button class="btn btn-primary btn-sm" ng-click="openBuyModal()">Buy Tickets</button>
+            <div class="input-group">
+              <div class="input-group-addon">Round #</div>
+                <input type="number" name="roundIndex" class="form-control" ng-model="roundIndex" ng-model-options="{debounce:300}" ng-disabled="isLoading">
+              </div>
+            </div>
+          </div>
+			  </div>
+			</nav>
+    <div class="container">
+      <div class="alert alert-danger text-center" ng-cloak ng-show="!isLoading && lotto && roundIndex<lotto.roundIndex">
+        Round #{{roundIndex}} has ended. Go to the <a ng-click="roundIndex=lotto.roundIndex">current round</a>
+      </div>
+      <div class="alert alert-danger text-center" ng-cloak ng-show="!isLoading && lotto && roundIndex>lotto.roundIndex">
+        Round #{{roundIndex}} hasn't started yet. Go to the <a ng-click="roundIndex=lotto.roundIndex">current round</a>
+      </div>
+      <div class="alert alert-info text-center" ng-if="isLoading">
+        Loading...
+      </div>
+      <div ng-show="!isLoading" ng-cloak>
+      	<div id="hero">
+      		<div id="pot" ng-if="round" ng-cloak>{{round.pot/1000000000000000000}} Ether</div>
+      		<div id="remaining" ng-if="lotto && roundIndex==lotto.roundIndex" ng-cloak>
+      			There are {{blocksLeft}} Blocks ( ~
+  	    			<span ng-if="timeLeft.hours>0">{{timeLeft.hours}} Hours,</span>
+  	    			<span ng-if="timeLeft.minutes>0">{{timeLeft.minutes}} Minutes,</span>
+  	    			{{timeLeft.seconds}} Seconds
+  	    		) until this round ends
+      		</div>
+          <div id="subpots" ng-if="round" ng-cloak>
+            {{round.subpotsCount}} subpots worth ~{{round.subpot/1000000000000000000 | number:2}} Ether each
+          </div>
+        </div>
+        <div>
+        	
+        </div>
+        <div class="alert alert-info text-center" ng-if="round && round.tickets.length==0" ng-cloak>
+            No one has bought any tickets yet this round!
+          </div>
+        <div ng-show="round.ticketsCount>0">
+          <ul class="nav nav-tabs" id="tabs">
+            <li role="presentation" ng-click="tab='tickets'" ng-class="{active:(tab=='tickets')}"><a>Tickets</a></li>
+            <li role="presentation" ng-click="tab='subpots'" ng-class="{active:(tab=='subpots')}"><a>Subpots</a></li>
+          </ul>
+          <div ng-show="tab=='tickets'">
+        		<table class="table">
+              <th>
+                <td>Buyer</td>
+                <td># of Tickets</td>
+                <td>% of Tickets</td>
+              </th>
+    	    		<tr ng-repeat="(buyer,count) in round.ticketsCountByBuyer">
+    	    			<td>{{$index}}.</td>
+                <td>{{buyer}}</td>
+                <td>{{count.toString()}}</td>
+                <td>{{count.times(100).dividedBy(round.ticketsCount).toString() | number:2}}%</td>
+    	    		</tr>
+        		</table>
+          </div>
+          <div ng-show="tab=='subpots'">
+            <table class="table">
+              <th>
+                <td>Decision Block #</td>
+                <td>Winner</td>
+                <td>Cashed Out?</td>
+                <td></td>
+              </th>
+              <tr ng-repeat="subpot in round.subpots">
+                <td>{{$index}}.</td>
+                <td>{{subpot.decisionBlockNumber?subpot.decisionBlockNumber:'...'}}</td>
+                <td>{{subpot.winner?subpot.winner:'...'}}</td>
+                <td>
+                  {{subpot.isCashed?'Yes':'No'}}
+                </td>
+                <td>
+                  <button
+                    ng-show="subpot.decisionBlockNumber<lotto.blockNumber&&!subpot.isCashed"
+                    class="btn btn-primary btn-sm"
+                    ng-click="openCashModal(roundIndex,$index)"
+                  >
+                    Cash Out
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </div>
+      	</div>
+      </div>
+      <script src="bower_components/web3/dist/web3.js"></script>
+      <script src="bower_components/angular/angular.min.js"></script>
+      <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+      <script src="index.js"></script>
+  </body>
+</html>

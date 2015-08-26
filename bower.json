@@ -1,0 +1,21 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "authors": [
+    "Aakil Fernandes <aakilfernandes@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angular": "~1.4.4",
+    "ui.bootstrap": "~0.13.3",
+    "angular-bootstrap": "~0.13.3"
+  }
+}

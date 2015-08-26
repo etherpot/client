@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <h3 class="modal-title">Cash Winnings for Round #{{roundIndex}}, Subpot #{{subpotIndex}}</h3>
+</div>
+<div class="modal-body">
+  <table class="table">
+    <tr>
+      <td>
+        Account
+      </td>
+      <td>
+        <select ng-options="account for account in accounts" ng-model="account" class="form-control"></select>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Available
+      </td>
+      <td>
+        {{accountBalanceInEther.toNumber() | number:4}} ether
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Estimated Gas Cost
+      </td>
+      <td>
+        {{estimatedGasCostInEther.toNumber() | number:4}} ether
+      </td>
+    </tr>
+  </table>
+  <div class="alert alert-danger text-center" ng-cloak ng-show="!isEnoughAvailable">
+    Account balance too low
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" type="button" ng-click="isEnoughAvailable && cash()" ng-disabled="!isEnoughAvailable">Cash Winnings</button>
+  <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>
